@@ -1,0 +1,56 @@
+In implementarea temei am folosit un arbore multicai. 
+
+Un nod din arbore contine urmatorarele informatii:
+    - int v;                    -> pentru cerinta 1 semnifica cine este la mutare pentru nodul respectiv ('X' sau 'O')
+                                -> pentru cerinta 2 se retine valoare de adevar calculata ('T' sau 'F')
+                                -> pentru cerinta 3 si bonus se retine valoarea miminax
+
+    - char joc[3][3]            -> reprezinta careul de joc X si 0
+
+    - struct NodLista* headCopii -> pentru fiecare nod se retine o lista cu copii lui
+
+    - struct NodArbore* parinte -> pentru fiecare nod se retine parintele lui
+
+
+Adaugarea unui nod copil la parintele lui se face la finalul listei de copii, astfel incat primul copil introdus
+sa fie pe prima pozitie din lista, al doilea pe a doua pozitie, etc
+
+
+Rezolvarea cerintei 1:
+
+    Dupa citirea datelor din fisier se creeaza radacina arborelui multicai ce are careul de joc cel citit din fisier.
+De la acest careu se porneste generarea arborelui in functia creazaArboreDinJoc. In aceasta functie pentru fiecare
+pozitie libera ce se gaseste (joc[i][j] == '-') se pune in ea caracterul jucatorului curent si se creaza un nod copil
+al nodului curent ce are aceasta configuratie de joc ca tabela. Daca tabela de joc nu este finala, atunci se apeleaza
+recursiv functia pentru a se genera subarborele corespunzator acestei configuratii. La revenirea din apelul recursiv
+se reface pozitia (i,j) ca fiind libera si se trece la urmatoarea pozitie neocupata.
+
+
+Rezolvarea cerintei 2:
+
+    Se parcurge cerinta 1 apoi se calculeaza valorile de adevar pentru fiecare nod al arborelui in functia 
+aflaValoriSiSau. Aceasta functie merge recursiv pana la nodurile frunza si le calculeaza valoarea de adevar in 
+functie de care jucator incepu jocul. Apoi cand se revine la nodul parinte se calculeaza valoare de adevar in
+fucntie de valorile de adevar ale copiilor lui.
+
+
+Rezolvarea cerintei 3:
+
+    Pentru citirea si construirea arborelui pe baza fisierului am folosit o coada. Aceasat imi va da nodul la care
+trebuie sa adaug urmatorii copii. Initial coada contine nodul radacina. Daca citesc din fisier un numar intre
+paranteze rotunde, atunci la nodul pe care l-am scos din coada se adauga atatia copii cat spune numarul citit.
+Daca citesc din fisier un numar intre paranteze drepte, atunci la nodul pe care l-am scos din coada ii pun valoarea
+data de numarul citit. Astfel la terminarea citirii din fiser, arborele are in frunze numerele din paranteze rotunde,
+iar in celelalte noduri se afloa 0 (acesta valoare se va schimba ulterir prin algoritmul minimax).
+    
+    Algoritmul minimax incepe cu apelul functie Maxim pentru nodul radacina. In aceasta functie valoarea nodului 
+curent este initializata cu INT_MIN(cazul cel mai defavorabil pentru maxim). Apoi se apeleaza functia Minim pentru
+fiecare copil al nodului curent si valoarea maxima introasa de aceste apeluri ale functiei Minim va fi salvata in 
+nodul curent. Functia Minim este asemanatoare cu functia Maxim, dar este perspectiva jucatorului minim ce cauta sa 
+minimizeze castigul.
+
+
+Rezolvarea bonusului:
+
+    Este aceeasi constuire a arborelui ca la cerinta 3. Iar la algoritmul Minimax s-au adaugat valorile alfa si beta.
+Cand se face o taiere (alfa-taiere sau beta-taiere), atunci se si sterge subarborele corespunzator.
